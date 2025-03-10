@@ -4,14 +4,12 @@ const app = epxree();
 
 const User = require("./models/user.js")
 
-app.post("/signup", async(req,res) =>{
+app.use(epxree.json());
 
-    const user = new User({
-        firstName: "Ahamad",
-        lastName: "Ali",
-        emailId: "ahmmadali@gmail.com",
-        password: "ahmad1234"
-    })
+app.post("/signup", async(req,res) =>{
+  
+
+    const user = new User(req.body)
     
     try {
         await user.save();
