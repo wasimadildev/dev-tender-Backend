@@ -9,12 +9,18 @@ app.use(epxree.json());
 // Add Data
 app.post("/signup", async (req, res) => {
   const user = new User(req.body);
+  const email = req.body.emailId;
+
+  const alreadyemail = await User.findOne({emailId: email});
+  if(alreadyemail){
+    return res.status(400).json("Email is already exits...")
+  }
 
   try {
     await user.save();
     res.send("Data Inset Successfully.... ");
   } catch (error) {
-    res.status(500).send("Data cannot insert !!!", error.message);
+    res.status(500).json({error: "Data cannot insert !!!", message: error.message});
   }
 });
 
@@ -72,14 +78,14 @@ try {
 app.patch("/user", async(req,res) =>{
 
   const userId = req.body.userId;
-  const data = req.body.data;
+const data = req.body;
 
   try {
-    const user = await User.findByIdAndUpdate(userId, data, {returnDocument: "before"})
+    const user = await User.findByIdAndUpdate(userId, data,{runValidators: true})
     res.send("Data Update Successfully ....")
 
   } catch (error) {
-    res.status(500).send("Something went wrong !!!!")
+    res.status(500).json({error: "Update failed!!!", message: error.message})
     
   }
 })
