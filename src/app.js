@@ -1,6 +1,8 @@
 const epxree = require("express");
 const connectDB = require("./config/database.js");
 const validator = require("validator");
+const cookieParser = require("cookie-parser");
+const jwt = require('jsonwebtoken');
 const {
   validateSignUpData,
   validateLogInData,
@@ -11,6 +13,7 @@ const app = epxree();
 const User = require("./models/user.js");
 
 app.use(epxree.json());
+app.use(cookieParser());
 
 // Add Data
 app.post("/signup", async (req, res) => {
@@ -51,7 +54,7 @@ app.post("/login", async (req, res) => {
     // Extract Data from API
     const { emailId, password } = req.body;
 
-    const user = await User.findOne({ emailId }).select("+password");
+    const user = await User.findOne({ emailId });
     if (!user) {
       return res.status(400).json({ error: "Invalid email or password." });
     }
@@ -60,7 +63,15 @@ app.post("/login", async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ error: "Invalid credentials." });
     }
-    res.send("Login Succesfully.... ")
+
+    //  Create a JWT Token
+    const token = await jwt.sign({_id: user._id}, "My-Secret-key")
+    console.log(token)
+
+
+    // Set JWT Token to cookie and send Response to the user
+    res.cookie("token", token);
+    res.send("Login Succesfully.... ");
   } catch (error) {
     res
       .status(500)
@@ -131,6 +142,22 @@ app.patch("/user/:userId", async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: "Update failed!!!", message: error.message });
   }
+});
+
+app.get("/profile", async (req, res) => {
+  const cookie = req.cookies;
+  const { token } = cookie;
+  // Validate my Token
+
+  const decodedMessage = await jwt.verify(token,"My-Secret-key")
+  console.log(decodedMessage)
+  const {_id} = decodedMessage;
+
+  console.log("Logged In user is: " + _id)
+
+  console.log(cookie);
+
+  res.send("Can Read or see profile");
 });
 connectDB()
   .then(() => {
