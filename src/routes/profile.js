@@ -5,9 +5,9 @@ const {
   validateForgotPassword,
 } = require("../utils/validation.js");
 const bcrypt = require("bcrypt");
-const profileRotuer = express.Router();
+const profileRouter = express.Router();
 
-profileRotuer.get("/view", userAuth, async (req, res) => {
+profileRouter.get("/view", userAuth, async (req, res) => {
   try {
     const user = req.user;
     res.send(user);
@@ -16,7 +16,7 @@ profileRotuer.get("/view", userAuth, async (req, res) => {
   }
 });
 
-profileRotuer.patch("/edit", userAuth, async (req, res) => {
+profileRouter.patch("/edit", userAuth, async (req, res) => {
   try {
     validateProfileEdit(req);
 
@@ -31,7 +31,7 @@ profileRotuer.patch("/edit", userAuth, async (req, res) => {
   }
 });
 
-profileRotuer.patch("/forgotPassword", userAuth, async (req, res) => {
+profileRouter.patch("/forgotPassword", userAuth, async (req, res) => {
   try {
     validateForgotPassword(req);
 
@@ -54,4 +54,4 @@ profileRotuer.patch("/forgotPassword", userAuth, async (req, res) => {
     res.status(400).send("ERROR : " + error.message);
   }
 });
-module.exports = profileRotuer;
+module.exports = profileRouter;

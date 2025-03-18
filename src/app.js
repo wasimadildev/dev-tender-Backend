@@ -1,13 +1,13 @@
-const epxree = require("express");
+const express = require("express");
 const connectDB = require("./config/database.js");
 const cookieParser = require("cookie-parser");
 
 
 
-const app = epxree();
+const app = express();
 
 
-app.use(epxree.json());
+app.use(express.json());
 app.use(cookieParser());
 
 const authRouter = require("./routes/auth.js")
@@ -29,5 +29,5 @@ connectDB()
     });
   })
   .catch((error) => {
-    console.error("Database cannot be extablished !!!!");
+    console.error("Database cannot be established !!!!");
   });

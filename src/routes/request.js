@@ -18,9 +18,7 @@ requestRouter.post("/send/:status/:toUserId", userAuth, async (req, res) => {
     }
 
     const toUser = await User.findById(toUserId);
-    const fromUser = await User.findById(fromUserId
-
-    )
+    const fromUser = await User.findById(fromUserId);
 
     if (!toUser) {
       throw new Error("User not found");
@@ -49,11 +47,42 @@ requestRouter.post("/send/:status/:toUserId", userAuth, async (req, res) => {
 
     res.json({
       message: `${toUser.firstName} is in ${status} to ${fromUser.firstName}`,
-      data
+      data,
     });
   } catch (error) {
     res.status(400).send("ERROR : " + error.message);
   }
 });
+
+requestRouter.post(
+  "/request/review/:status/:requestId",
+  userAuth,
+  async (req, res) => {
+    try {
+      const status = req.params.status;
+      const requestId = req.params.requestId;
+      const loggedInUser = req.user;
+      const allowedStatus = ["accepted", "rejected"];
+      if (!allowedStatus.includes(status)) {
+        throw new Error("Status not allowed");
+      }
+
+      const connectionRequest = await ConnectionRequest.findOne({
+        _id: requestId,
+        toUserId: loggedInUser._id,
+        status: "interested",
+      });
+
+      if (!connectionRequest) {
+        throw new Error("Connection Request not found");
+      }
+      connectionRequest.status = status;
+      const data = await connectionRequest.save();
+      req.json({ message: "Connection Request " + status , data });
+    } catch (error) {
+      res.status(400).send("ERROR" + error.message);
+    }
+  }
+);
 
 module.exports = requestRouter;

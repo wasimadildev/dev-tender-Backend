@@ -53,7 +53,7 @@ authRouter.post("/login", async (req, res) => {
       expires: new Date(Date.now() + 900000),
       httpOnly: true,
     });
-    res.send("Login Succesfully.... ");
+    res.send("Login Successfully.... ");
   } catch (error) {
     res
       .status(500)
@@ -62,10 +62,9 @@ authRouter.post("/login", async (req, res) => {
 });
 
 authRouter.post("/logout", (req, res) => {
-  // Method 01
-  // res.clearCookie("token");
-
-  // Method 02
+ 
+  
+ 
   res.cookie("token", null, {
     expires: new Date(Date.now()),
   });
